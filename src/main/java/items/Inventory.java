@@ -79,7 +79,7 @@ public class Inventory
      */
     public boolean isFull()
     {
-        return this.slots.currentSize <= this.capacity;
+        return this.slots.currentSize >= this.capacity;
     }
 
     /**
@@ -127,13 +127,42 @@ public class Inventory
     public boolean addItems(ItemStack stack)
     {
         if (!this.isFull()) {
-            this.addItemStackNoCheck(stack);
             return true;
         }
 
+        // Check if item type already exists
+        if (this.containsItemType(stack.getItem())){
+            return false;
+        }
+        
+        this.addItemStackNoCheck(stack);
         return false;
     }
 
+    private boolean containsItemType(Item itemType)
+    {
+        LinkedList.Node<ItemStack> it = this.slots.head;
+        while (it != null) {
+            if (it.data.getItem().equals(itemType)) {
+                return true;
+            }
+            it = it.next;
+        }
+        return false;
+    }
+
+    public ItemStack findStack(Item itemType)
+    {
+        LinkedList.Node<ItemStack> it = this.slots.head;
+        while (it != null) {
+            if (it.data.getItem().equals(itemType)) {
+                return it.data;
+            }
+            it = it.next;
+        }
+        return null;
+    }
+    
     /**
      * *Print* a Summary of the Inventory and all Items contained within.
      */
